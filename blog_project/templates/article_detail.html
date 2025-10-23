@@ -1,4 +1,3 @@
-<!-- templates/article_detail.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +18,11 @@
         <h1>文章详情</h1>
         <div>
             <a href="{% url 'article_list' %}" class="btn">返回列表</a>
-            <a href="{% url 'logout' %}" class="btn" style="margin-left: 10px;">退出登录</a>
+            {% if is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn" style="margin-left: 10px;">退出登录</a>
+            {% else %}
+                <a href="{% url 'login_page' %}" class="btn" style="margin-left: 10px;">登录</a>
+            {% endif %}
         </div>
     </div>
 
@@ -27,16 +30,19 @@
     
     <div class="article-meta">
         作者: {{ article.author.username }} | 
-        发布时间: {{ article.created_at|date:"Y-m-d H:i" }} |
-        更新时间: {{ article.updated_at|date:"Y-m-d H:i" }}
+        发布时间: {{ article.created_at|date:"Y-m-d H:i" }}
     </div>
 
     <div class="stats-box">
         <h3>阅读统计</h3>
         <p>总阅读量: <strong>{{ article.total_views }}</strong></p>
         <p>唯一访客: <strong>{{ article.unique_visitors }}</strong></p>
-        <p>您的阅读次数: <strong>{{ user_view_count }}</strong></p>
-        <p style="color: green; font-size: 14px;">✓ 已记录本次阅读</p>
+        {% if is_authenticated %}
+            <p>您的阅读次数: <strong>{{ user_view_count }}</strong></p>
+            <p style="color: green; font-size: 14px;">✓ 已记录本次阅读</p>
+        {% else %}
+            <p style="color: #666; font-size: 14px;">🔒 登录后才会记录您的阅读次数</p>
+        {% endif %}
     </div>
 
     <div class="article-content">
@@ -46,5 +52,24 @@
     <div>
         <a href="{% url 'article_list' %}" class="btn btn-primary">返回文章列表</a>
     </div>
+    <script>
+        // 自动发送JWT token
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            fetch(window.location.href, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+            }).then(html => {
+                if (html) {
+                    document.documentElement.innerHTML = html;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
