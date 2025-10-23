@@ -1,0 +1,50 @@
+<!-- templates/article_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ article.title }}</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .article-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .article-meta { color: #666; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .article-content { line-height: 1.6; margin-bottom: 30px; }
+        .stats-box { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .btn { background: #6c757d; color: white; padding: 8px 15px; border: none; border-radius: 3px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>文章详情</h1>
+        <div>
+            <a href="{% url 'article_list' %}" class="btn">返回列表</a>
+            <a href="{% url 'logout' %}" class="btn" style="margin-left: 10px;">退出登录</a>
+        </div>
+    </div>
+
+    <div class="article-title">{{ article.title }}</div>
+    
+    <div class="article-meta">
+        作者: {{ article.author.username }} | 
+        发布时间: {{ article.created_at|date:"Y-m-d H:i" }} |
+        更新时间: {{ article.updated_at|date:"Y-m-d H:i" }}
+    </div>
+
+    <div class="stats-box">
+        <h3>阅读统计</h3>
+        <p>总阅读量: <strong>{{ article.total_views }}</strong></p>
+        <p>唯一访客: <strong>{{ article.unique_visitors }}</strong></p>
+        <p>您的阅读次数: <strong>{{ user_view_count }}</strong></p>
+        <p style="color: green; font-size: 14px;">✓ 已记录本次阅读</p>
+    </div>
+
+    <div class="article-content">
+        {{ article.content|linebreaks }}
+    </div>
+
+    <div>
+        <a href="{% url 'article_list' %}" class="btn btn-primary">返回文章列表</a>
+    </div>
+</body>
+</html>

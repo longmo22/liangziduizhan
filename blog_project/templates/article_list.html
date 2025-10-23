@@ -1,0 +1,65 @@
+<!-- templates/article_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文章列表</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .login-status { background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+        .article-list { list-style: none; padding: 0; }
+        .article-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        .article-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .article-meta { color: #666; font-size: 14px; }
+        .article-stats { background: #f8f9fa; padding: 10px; border-radius: 3px; margin-top: 10px; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .btn { background: #6c757d; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-success { background: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>文章列表</h1>
+        <div>
+            {% if has_token %}
+                <span>欢迎！</span>
+                <a href="/logout/" class="btn" style="margin-left: 15px;">退出登录</a>
+            {% else %}
+                <a href="/login/" class="btn btn-success">登录</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not has_token %}
+    <div class="login-status">
+        <p>🔓 <strong>当前为游客模式</strong> - 您可以浏览文章列表，但需要登录后才能查看详情和记录阅读</p>
+    </div>
+    {% endif %}
+
+    <div class="article-list">
+        {% for article in articles %}
+        <div class="article-item">
+            <div class="article-title">
+                {% if has_token %}
+                    <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+                {% else %}
+                    <span style="color: #666;">{{ article.title }}</span>
+                    <small style="color: #ff6b6b; margin-left: 10px;">[需登录查看]</small>
+                {% endif %}
+            </div>
+            <div class="article-meta">
+                作者: {{ article.author.username }} | 
+                发布时间: {{ article.created_at|date:"Y-m-d H:i" }}
+            </div>
+            <div class="article-stats">
+                总阅读量: {{ article.total_views }} | 
+                唯一访客: {{ article.unique_visitors }}
+            </div>
+        </div>
+        {% empty %}
+        <p>暂无文章</p>
+        {% endfor %}
+    </div>
+</body>
+</html> 
