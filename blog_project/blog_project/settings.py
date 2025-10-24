@@ -172,3 +172,55 @@ CACHES = {
         }
     }
 }
+
+# 缓存超时设置
+CACHE_TTL = 60 * 15
+
+#日志
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False, #是否禁用其它模块的日志功能
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    #日志的过滤信息
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        }, #DEBUG = True 时，相关的日志记录才会被处理。
+    },
+    #日志的处理方式
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file":{
+            "level":"INFO",
+            "class":"logging.handlers.RotatingFileHandler",
+            "filename":os.path.join(os.path.dirname(BASE_DIR),'logs/django_dev.log'),
+            #日志文件最大值
+            "maxBytes":1024*1024*3,
+            #日志文件的数量
+            "backupCount":5,
+            #日志格式：详细
+            "formatter":"verbose",
+        }
+    },
+    #日志的入口
+    "loggers": {
+        "django": {
+            "handlers": ["console","file"],
+            "propagate": True, #是否让其它日志处理器处理
+        },
+    },
+}
