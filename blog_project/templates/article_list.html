@@ -23,7 +23,7 @@
         <div>
             {% if is_authenticated %}
                 <span>欢迎, {{ user.username }}!</span>
-                <a href="/logout/" class="btn" style="margin-left: 15px;">退出登录</a>
+                <a href="#" onclick="logout()" class="btn" style="margin-left: 15px;">退出登录</a>
             {% else %}
                 <a href="/login/" class="btn btn-success">登录</a>
             {% endif %}
@@ -40,7 +40,7 @@
         {% for article in articles %}
         <div class="article-item">
             <div class="article-title">
-                <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+                <a href="{% url 'article_detail' article.id %}" onclick="return visitArticle(event, this.href)">{{ article.title }}</a>
             </div>
             <div class="article-meta">
                 作者: {{ article.author.username }} | 
@@ -56,6 +56,44 @@
         {% endfor %}
     </div>
     <script>
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            window.location.reload();
+        }
+        
+        function visitArticle(event, url) {
+            event.preventDefault();
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                alert('请先登录');
+                window.location.href = '/login/';
+                return false;
+            }
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else if (response.status === 401) {
+                    alert('登录已过期，请重新登录');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    window.location.href = '/login/';
+                }
+            }).then(html => {
+                if (html) {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }
+            });
+            return false;
+        }
+        
         // 自动发送JWT token
         const token = localStorage.getItem('access_token');
         if (token) {

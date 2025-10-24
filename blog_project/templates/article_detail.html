@@ -19,7 +19,7 @@
         <div>
             <a href="{% url 'article_list' %}" class="btn">返回列表</a>
             {% if is_authenticated %}
-                <a href="{% url 'logout' %}" class="btn" style="margin-left: 10px;">退出登录</a>
+                <a href="#" onclick="logout()" class="btn" style="margin-left: 10px;">退出登录</a>
             {% else %}
                 <a href="{% url 'login_page' %}" class="btn" style="margin-left: 10px;">登录</a>
             {% endif %}
@@ -53,6 +53,12 @@
         <a href="{% url 'article_list' %}" class="btn btn-primary">返回文章列表</a>
     </div>
     <script>
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            window.location.href = '/articles/';
+        }
+        
         // 自动发送JWT token
         const token = localStorage.getItem('access_token');
         if (token) {

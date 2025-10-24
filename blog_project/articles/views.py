@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
-from django.shortcuts import render, redirect, get_object_or_404
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from django.shortcuts import render, get_object_or_404
 from django.db import transaction
 from django.db.models import Sum, Count
-from django.contrib.auth import logout, authenticate, login
 from django.http import JsonResponse
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Article, ArticleViewRecord
 
 class LoginPageView(APIView):
@@ -19,11 +19,10 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
     
     def get(self, request):
-        logout(request)
-        return redirect('article_list')
+        return JsonResponse({'success': True})
 
 class ArticleListView(APIView):
-    """文章列表页 - 完全开放"""
+    """文章列表页"""
     permission_classes = [AllowAny]
     
     def get(self, request):
@@ -35,7 +34,8 @@ class ArticleListView(APIView):
 
 class ArticleDetailView(APIView):
     """文章详情页"""
-    permission_classes = [AllowAny]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
